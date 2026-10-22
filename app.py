@@ -38,12 +38,10 @@ class LoginWindow:
     def __init__(self, root, on_login):
         self.root = root
         self.on_login = on_login
-        self.window = tk.Toplevel(root)
+        self.window = root
         self.window.title("St. Lucy | Sign in")
         self.window.resizable(False, False)
         self.window.protocol("WM_DELETE_WINDOW", root.destroy)
-        self.window.transient(root)
-        self.window.grab_set()
         self.window.geometry("420x330")
 
         panel = ttk.Frame(self.window, padding=30)
@@ -72,8 +70,8 @@ class LoginWindow:
         if not user:
             messagebox.showerror("Sign-in failed", "The username or password is incorrect, or the account is inactive.", parent=self.window)
             return
-        self.window.grab_release()
-        self.window.destroy()
+        for child in self.window.winfo_children():
+            child.destroy()
         self.on_login(user)
 
     def register(self):
@@ -153,7 +151,6 @@ class MainApplication:
 
     def sign_out(self):
         self.frame.destroy()
-        self.root.withdraw()
         LoginWindow(self.root, lambda user: MainApplication(self.root, user))
 
 
@@ -498,7 +495,6 @@ class ReportsPage(ttk.Frame):
 
 def main():
     root = tk.Tk()
-    root.withdraw()
     style = ttk.Style(root)
     if "clam" in style.theme_names():
         style.theme_use("clam")
